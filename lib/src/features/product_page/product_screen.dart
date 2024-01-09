@@ -22,23 +22,20 @@ class ProductScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: Read from data source
-    final product =
-        kTestProducts.firstWhere((product) => product.id == productId);
+    final product = kTestProducts.firstWhere((product) => product.id == productId);
     return Scaffold(
       appBar: const HomeAppBar(),
-      body: product == null
-          ? EmptyPlaceholderWidget(
-              message: 'Product not found'.hardcoded,
-            )
-          : CustomScrollView(
-              slivers: [
-                ResponsiveSliverCenter(
-                  padding: const EdgeInsets.all(Sizes.p16),
-                  child: ProductDetails(product: product),
-                ),
-                ProductReviewsList(productId: productId),
-              ],
-            ),
+      body: product == null ? EmptyPlaceholderWidget(
+        message: 'Product not found'.hardcoded,
+      ) : CustomScrollView(
+        slivers: [
+          ResponsiveSliverCenter(
+            padding: const EdgeInsets.all(Sizes.p16),
+            child: ProductDetails(product: product),
+          ),
+          ProductReviewsList(productId: productId),
+        ],
+      ),
     );
   }
 }
@@ -67,7 +64,7 @@ class ProductDetails extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(product.title, style: Theme.of(context).textTheme.headline6),
+              Text(product.title, style: Theme.of(context).textTheme.titleLarge),
               gapH8,
               Text(product.description),
               // Only show average if there is at least one rating
@@ -79,7 +76,7 @@ class ProductDetails extends StatelessWidget {
               const Divider(),
               gapH8,
               Text(priceFormatted,
-                  style: Theme.of(context).textTheme.headline5),
+                  style: Theme.of(context).textTheme.headlineSmall),
               gapH8,
               LeaveReviewAction(productId: product.id),
               const Divider(),

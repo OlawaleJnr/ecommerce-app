@@ -1,12 +1,13 @@
 import 'dart:math';
 
 import 'package:ecommerce_app/src/constants/test_products.dart';
-import 'package:ecommerce_app/src/features/product_page/product_screen.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
+import 'package:ecommerce_app/src/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:ecommerce_app/src/constants/app_sizes.dart';
 import 'package:ecommerce_app/src/features/products_list/product_card.dart';
+import 'package:go_router/go_router.dart';
 
 /// A widget that displays the list of products that match the search query.
 class ProductsGrid extends StatelessWidget {
@@ -16,27 +17,21 @@ class ProductsGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: Read from data source
     const products = kTestProducts;
-    return products.isEmpty
-        ? Center(
-            child: Text(
-              'No products found'.hardcoded,
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          )
-        : ProductsLayoutGrid(
-            itemCount: products.length,
-            itemBuilder: (_, index) {
-              final product = products[index];
-              return ProductCard(
-                product: product,
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => ProductScreen(productId: product.id),
-                  ),
-                ),
-              );
-            },
-          );
+    return products.isEmpty ? Center(
+      child: Text(
+        'No products found'.hardcoded,
+        style: Theme.of(context).textTheme.headlineMedium,
+      ),
+    ) : ProductsLayoutGrid(
+      itemCount: products.length,
+      itemBuilder: (_, index) {
+        final product = products[index];
+        return ProductCard(
+          product: product,
+          onPressed: () => context.goNamed(AppRoute.product.name, pathParameters: {'id' : product.id})
+        );
+      },
+    );
   }
 }
 
