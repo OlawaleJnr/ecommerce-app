@@ -1,4 +1,6 @@
 import 'package:ecommerce_app/src/features/account/account_screen.dart';
+import 'package:ecommerce_app/src/features/checkout/checkout_screen.dart';
+import 'package:ecommerce_app/src/features/leave_review_page/leave_review_screen.dart';
 import 'package:ecommerce_app/src/features/not_found/not_found_screen.dart';
 import 'package:ecommerce_app/src/features/orders_list/orders_list_screen.dart';
 import 'package:ecommerce_app/src/features/product_page/product_screen.dart';
@@ -12,7 +14,9 @@ import 'package:go_router/go_router.dart';
 enum AppRoute {
   home,
   product,
+  review,
   cart,
+  checkout,
   orders,
   account,
   signIn,
@@ -21,7 +25,7 @@ enum AppRoute {
 class AppRouter {
   static GoRouter initializeRouter() {
     return GoRouter(
-      initialLocation: '/abs',
+      initialLocation: '/',
       debugLogDiagnostics: true,
       routes: [
         GoRoute(
@@ -35,7 +39,21 @@ class AppRouter {
               builder: (context, state) {
                 final productId = state.pathParameters['id']!;
                 return ProductScreen(productId: productId);
-              }
+              },
+              routes: [
+                GoRoute(
+                  path: 'review',
+                  name: AppRoute.review.name,
+                  pageBuilder: (context, state) {
+                    final productId = state.pathParameters['id']!;
+                    return MaterialPage(
+                      key: state.pageKey,
+                      fullscreenDialog: true,
+                      child: LeaveReviewScreen(productId: productId)
+                    );
+                  },
+                ),
+              ],
             ),
             GoRoute(
               path: 'cart',
@@ -45,6 +63,17 @@ class AppRouter {
                 fullscreenDialog: true,
                 child: const ShoppingCartScreen()
               ),
+              routes: [
+                GoRoute(
+                  path: 'checkout',
+                  name: AppRoute.checkout.name,
+                  pageBuilder: (context, state) => MaterialPage(
+                    key: state.pageKey,
+                    fullscreenDialog: true,
+                    child: const CheckoutScreen()
+                  ),
+                ),
+              ]
             ),
             GoRoute(
               path: 'orders',
