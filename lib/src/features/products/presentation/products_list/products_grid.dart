@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:ecommerce_app/src/common_widgets/error_message_widget.dart';
 import 'package:ecommerce_app/src/features/products/data/fake_product_repository.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
 import 'package:ecommerce_app/src/routes/route.dart';
@@ -15,22 +16,25 @@ class ProductsGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final productsRepository = ref.watch(productsRepositoryProvider);
-    final products = productsRepository.getProductList();
-    return products.isEmpty ? Center(
-      child: Text(
-        'No products found'.hardcoded,
-        style: Theme.of(context).textTheme.headlineMedium,
-      ),
-    ) : ProductsLayoutGrid(
-      itemCount: products.length,
-      itemBuilder: (_, index) {
-        final product = products[index];
-        return ProductCard(
-          product: product,
-          onPressed: () => context.goNamed(AppRoute.product.name, pathParameters: {'id' : product.id})
-        );
-      },
+    final productListValue = ref.watch(productListStreamProvider);
+    return productListValue.when(
+      data: (products) => products.isEmpty ? Center(
+        child: Text(
+          'No products found'.hardcoded,
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+      ) : ProductsLayoutGrid(
+        itemCount: products.length,
+        itemBuilder: (_, index) {
+          final product = products[index];
+          return ProductCard(
+            product: product,
+            onPressed: () => context.goNamed(AppRoute.product.name, pathParameters: {'id' : product.id})
+          );
+        },
+      ), 
+      error: (err, stackTrace) => Center(child: ErrorMessageWidget(err.toString())), 
+      loading: () => const Center(child: CircularProgressIndicator())
     );
   }
 }
