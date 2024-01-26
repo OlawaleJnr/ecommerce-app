@@ -1,4 +1,5 @@
 import 'package:ecommerce_app/src/common_widgets/empty_placeholder_widget.dart';
+import 'package:ecommerce_app/src/common_widgets/error_message_widget.dart';
 import 'package:ecommerce_app/src/features/cart/presentation/add_to_cart/add_to_cart_widget.dart';
 import 'package:ecommerce_app/src/features/products/data/fake_product_repository.dart';
 import 'package:ecommerce_app/src/features/products/presentation/product_screen/leave_review_action.dart';
@@ -26,18 +27,21 @@ class ProductScreen extends ConsumerWidget {
       appBar: const HomeAppBar(),
       body: Consumer(
         builder: (context, ref, _) {
-          final productsRepository = ref.watch(productsRepositoryProvider);
-          final product = productsRepository.getProduct(productId);
-          return product == null ? EmptyPlaceholderWidget(
+          final productValue = ref.watch(productProvider(productId));
+          return productValue.when(
+            data: (product) => product == null ? EmptyPlaceholderWidget(
             message: 'Product not found'.hardcoded,
-          ) : CustomScrollView(
-            slivers: [
-              ResponsiveSliverCenter(
-                padding: const EdgeInsets.all(Sizes.p16),
-                child: ProductDetails(product: product),
-              ),
-              ProductReviewsList(productId: productId),
-            ],
+            ) : CustomScrollView(
+              slivers: [
+                ResponsiveSliverCenter(
+                  padding: const EdgeInsets.all(Sizes.p16),
+                  child: ProductDetails(product: product),
+                ),
+                ProductReviewsList(productId: productId),
+              ],
+            ), 
+            error: (err, stackTrace) => Center(child: ErrorMessageWidget(err.toString())), 
+            loading: () => const Center(child: CircularProgressIndicator())
           );
         },
       )
