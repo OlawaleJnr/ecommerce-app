@@ -9,10 +9,11 @@ import 'package:ecommerce_app/src/common_widgets/item_quantity_selector.dart';
 import 'package:ecommerce_app/src/common_widgets/responsive_two_column_layout.dart';
 import 'package:ecommerce_app/src/constants/app_sizes.dart';
 import 'package:ecommerce_app/src/features/products/domain/product.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 /// Shows a shopping cart item (or loading/error UI if needed)
-class ShoppingCartItem extends StatelessWidget {
+class ShoppingCartItem extends ConsumerWidget {
   const ShoppingCartItem({
     super.key,
     required this.item,
@@ -28,9 +29,9 @@ class ShoppingCartItem extends StatelessWidget {
   final bool isEditable;
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: Read from data source
-    final product = FakeProductRepository.instance.getProduct(item.productId)!;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final productsRepository = ref.watch(productsRepositoryProvider);
+    final product = productsRepository.getProduct(item.productId)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: Sizes.p8),
       child: Card(
@@ -84,37 +85,37 @@ class ShoppingCartItemContents extends StatelessWidget {
           Text(priceFormatted, style: Theme.of(context).textTheme.headlineSmall),
           gapH24,
           isEditable
-              // show the quantity selector and a delete button
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ItemQuantitySelector(
-                      quantity: item.quantity,
-                      maxQuantity: min(product.availableQuantity, 10),
-                      itemIndex: itemIndex,
-                      // TODO: Implement onChanged
-                      onChanged: (value) {
-                        showNotImplementedAlertDialog(context: context);
-                      },
-                    ),
-                    IconButton(
-                      key: deleteKey(itemIndex),
-                      icon: Icon(Icons.delete, color: Colors.red[700]),
-                      // TODO: Implement onPressed
-                      onPressed: () {
-                        showNotImplementedAlertDialog(context: context);
-                      },
-                    ),
-                    const Spacer(),
-                  ],
-                )
-              // else, show the quantity as a read-only label
-              : Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Sizes.p8),
-                  child: Text(
-                    'Quantity: ${item.quantity}'.hardcoded,
+            // show the quantity selector and a delete button
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ItemQuantitySelector(
+                    quantity: item.quantity,
+                    maxQuantity: min(product.availableQuantity, 10),
+                    itemIndex: itemIndex,
+                    // TODO: Implement onChanged
+                    onChanged: (value) {
+                      showNotImplementedAlertDialog(context: context);
+                    },
                   ),
+                  IconButton(
+                    key: deleteKey(itemIndex),
+                    icon: Icon(Icons.delete, color: Colors.red[700]),
+                    // TODO: Implement onPressed
+                    onPressed: () {
+                      showNotImplementedAlertDialog(context: context);
+                    },
+                  ),
+                  const Spacer(),
+                ],
+              )
+            // else, show the quantity as a read-only label
+            : Padding(
+                padding: const EdgeInsets.symmetric(vertical: Sizes.p8),
+                child: Text(
+                  'Quantity: ${item.quantity}'.hardcoded,
                 ),
+              ),
         ],
       ),
     );
