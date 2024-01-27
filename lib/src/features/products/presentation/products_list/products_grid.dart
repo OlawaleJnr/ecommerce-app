@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'package:ecommerce_app/src/common_widgets/async_value_widget.dart';
 import 'package:ecommerce_app/src/common_widgets/error_message_widget.dart';
 import 'package:ecommerce_app/src/features/products/data/fake_product_repository.dart';
+import 'package:ecommerce_app/src/features/products/domain/product.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
 import 'package:ecommerce_app/src/routes/route.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +19,8 @@ class ProductsGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productListValue = ref.watch(productListStreamProvider);
-    return productListValue.when(
+    return AsyncValueWidget<List<Product>>(
+      value: productListValue,
       data: (products) => products.isEmpty ? Center(
         child: Text(
           'No products found'.hardcoded,
@@ -32,9 +35,7 @@ class ProductsGrid extends ConsumerWidget {
             onPressed: () => context.goNamed(AppRoute.product.name, pathParameters: {'id' : product.id})
           );
         },
-      ), 
-      error: (err, stackTrace) => Center(child: ErrorMessageWidget(err.toString())), 
-      loading: () => const Center(child: CircularProgressIndicator())
+      )
     );
   }
 }
