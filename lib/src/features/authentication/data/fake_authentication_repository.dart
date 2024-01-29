@@ -1,5 +1,7 @@
 import 'package:ecommerce_app/src/features/authentication/domain/app_user.dart';
+import 'package:ecommerce_app/src/utils/in_memory_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 
 /// The `AuthRepository` class defines a set of methods for managing user authentication, including
 /// signing in, creating a new user, signing out, and getting the current user.
@@ -31,37 +33,73 @@ abstract class AuthenticationRepository {
 }
 
 class FakeAuthenticationRepository implements AuthenticationRepository {
-  /// The function returns a stream that emits changes in the authentication state of the app user.
+  /// The line is creating an instance of the `InMemoryStore` class with the type parameter `AppUser?` 
+  /// and initializing it with a value of `null`.
+  final _authState = InMemoryStore<AppUser?>(null);
+
+  /// The function `authStateChanges()` returns a stream of `AppUser` objects that represent changes in
+  /// the authentication state.
   @override
-  Stream<AppUser?> authStateChanges() => Stream.value(null);
+  Stream<AppUser?> authStateChanges() => _authState.stream;
    
-  /// The `AppUser? get currentUser => null;` is a getter method that returns the current authenticated
-  /// user. In this case, it always returns `null`, indicating that there is no authenticated user
-  /// currently.
+  /// The `AppUser? get currentUser => _authState.value;` is a getter method that returns the current
+  /// authenticated user. It retrieves the value of the `_authState` variable, which is an instance of
+  /// `InMemoryStore<AppUser?>`, and returns it. The `AppUser?` type indicates that the returned value
+  /// can be either an `AppUser` object or `null`.
   @override
-  AppUser? get currentUser => null;
+  AppUser? get currentUser => _authState.value;
   
+  /// The function checks if there is a current user and creates a new user if there isn't one.
+  /// 
+  /// Args: email (String): A string representing the user's email address.
+  /// 
+  /// Args: password (String): The password parameter is a string that represents the user's password.
   @override
   Future<void> signInWithEmailAndPassword(String email, String password) async {
-    // TODO: Implement authentication using email and password credentials
+    if (currentUser ==  null) {
+      _createNewUser(email);
+    }
   }
 
+  /// The function checks if there is a current user and creates a new user if there isn't one.
+  /// 
+  /// Args: email (String): A string representing the user's email address.
+  /// 
+  /// Args: password (String): The password parameter is a string that represents the user's password.
   @override
   Future<void> createUserWithEmailAndPassword(String email, String password) async {
-    // TODO: Implement logic for creating users with unique email and password
+    if (currentUser ==  null) {
+      _createNewUser(email);
+    }
   }
 
+  /// The signOut function sets the value of _authState to null.
   @override
   Future<void> signOut() async {
-    // TODO: Invalidate the authenticated user session
+    _authState.value = null;
   }
+
+  /// The function creates a new user with a unique identifier and the provided email address.
+  /// 
+  /// Args: email (String): The email parameter is a string that represents the email address of the user.
+  void _createNewUser(String email) {
+    _authState.value = AppUser(uid: const Uuid().v4(), email: email);
+  }
+
+  /// The dispose function closes the _authState stream.
+  void dispose() => _authState.close();
 }
 
 /// The `authRepositoryProvider` is a provider that creates and provides an instance of the
-/// `FakeAuthenticationRepository` class. It is defined using the `Provider` class from the
-/// `flutter_riverpod` package.
+/// `FakeAuthenticationRepository` class. It uses the `Provider` class from the `flutter_riverpod`
+/// package to define the provider.
 final authRepositoryProvider = Provider<FakeAuthenticationRepository>((ref) {
-  return FakeAuthenticationRepository();
+  final auth = FakeAuthenticationRepository();
+  /// The line `ref.onDispose(() => auth.dispose());` is registering a callback function to be called
+  /// when the provider is disposed. In this case, it is calling the `dispose()` method of the
+  /// `FakeAuthenticationRepository` instance `auth`.
+  ref.onDispose(() => auth.dispose());
+  return auth;
 });
 
 /// The `authStateChangesProvider` is a provider that creates and provides a stream of changes in the
