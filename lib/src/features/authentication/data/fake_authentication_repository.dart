@@ -31,7 +31,6 @@ abstract class AuthenticationRepository {
 }
 
 class FakeAuthenticationRepository implements AuthenticationRepository {
-
   /// The function returns a stream that emits changes in the authentication state of the app user.
   @override
   Stream<AppUser?> authStateChanges() => Stream.value(null);
