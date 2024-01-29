@@ -1,6 +1,5 @@
 import 'package:ecommerce_app/src/common_widgets/async_value_widget.dart';
 import 'package:ecommerce_app/src/common_widgets/empty_placeholder_widget.dart';
-import 'package:ecommerce_app/src/common_widgets/error_message_widget.dart';
 import 'package:ecommerce_app/src/features/cart/presentation/add_to_cart/add_to_cart_widget.dart';
 import 'package:ecommerce_app/src/features/products/data/fake_product_repository.dart';
 import 'package:ecommerce_app/src/features/products/presentation/product_screen/leave_review_action.dart';

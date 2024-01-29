@@ -1,8 +1,11 @@
 /// * The product identifier is an important concept and can have its own type.
 typedef ProductID = String;
 
-/// Class representing a product.
+/// The `Product` class represents a product with various properties such as id, image URL, title,
+/// description, price, available quantity, average rating, and number of ratings.
 class Product {
+  /// The `const Product()` constructor is creating a new instance of the `Product` class with the
+  /// specified properties.
   const Product({
     required this.id,
     required this.imageUrl,
