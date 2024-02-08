@@ -1,11 +1,13 @@
 import 'package:ecommerce_app/src/features/authentication/domain/app_user.dart';
 import 'package:ecommerce_app/src/utils/in_memory_store.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 /// The `AuthRepository` class defines a set of methods for managing user authentication, including
 /// signing in, creating a new user, signing out, and getting the current user.
 abstract class AuthenticationRepository {
+
   /// The `Stream<AppUser?> authStateChanges();` method is defining a stream that emits changes in the
   /// authentication state of the app user. It returns a `Stream` object that emits `AppUser` objects or
   /// `null` values. This stream can be used to listen for changes in the authentication state, such as
@@ -33,6 +35,7 @@ abstract class AuthenticationRepository {
 }
 
 class FakeAuthenticationRepository implements AuthenticationRepository {
+  
   /// The line is creating an instance of the `InMemoryStore` class with the type parameter `AppUser?` 
   /// and initializing it with a value of `null`.
   final _authState = InMemoryStore<AppUser?>(null);
@@ -95,10 +98,14 @@ class FakeAuthenticationRepository implements AuthenticationRepository {
 /// package to define the provider.
 final authRepositoryProvider = Provider<FakeAuthenticationRepository>((ref) {
   final auth = FakeAuthenticationRepository();
+  debugPrint("Event: Created Fake Authentication Repository Provider");
   /// The line `ref.onDispose(() => auth.dispose());` is registering a callback function to be called
   /// when the provider is disposed. In this case, it is calling the `dispose()` method of the
   /// `FakeAuthenticationRepository` instance `auth`.
-  ref.onDispose(() => auth.dispose());
+  ref.onDispose(() {
+    auth.dispose();
+    debugPrint("Event: Disposed Fake Authentication Repository Provider");
+  });
   return auth;
 });
 
