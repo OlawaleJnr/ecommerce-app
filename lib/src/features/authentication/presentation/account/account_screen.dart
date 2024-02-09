@@ -1,6 +1,6 @@
 import 'package:ecommerce_app/src/common_widgets/alert_dialogs.dart';
-import 'package:ecommerce_app/src/features/authentication/data/fake_authentication_repository.dart';
 import 'package:ecommerce_app/src/features/authentication/domain/app_user.dart';
+import 'package:ecommerce_app/src/features/authentication/presentation/account/controllers/account_screen_controller.dart';
 import 'package:ecommerce_app/src/localization/string_hardcoded.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_app/src/common_widgets/action_text_button.dart';
@@ -14,13 +14,23 @@ class AccountScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<AsyncValue<void>>(accountScreenControllerProvider, (previous, next) { 
+      /// The code checks if the loading state is false and if there is an error in the `state`
+      /// AsyncValue. If both conditions are true, it calls the `showExceptionAlertDialog` function to
+      /// display an alert dialog with the error message.
+      if (!next.isLoading && next.hasError) {
+        showExceptionAlertDialog(context: context, title: 'Error'.hardcoded, exception: next.error);
+      }
+    });
+
+    final state = ref.watch(accountScreenControllerProvider);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Account'.hardcoded),
+        title: state.isLoading ? const CircularProgressIndicator() : Text('Account'.hardcoded),
         actions: [
           ActionTextButton(
             text: 'Logout'.hardcoded,
-            onPressed: () async {
+            onPressed: state.isLoading ? null : () async {
               // showNotImplementedAlertDialog(context: context);
               final logout = await showAlertDialog(
                 context: context,
@@ -29,7 +39,7 @@ class AccountScreen extends ConsumerWidget {
                 defaultActionText: 'Logout'.hardcoded,
               );
               if (logout == true) {
-                ref.read(authRepositoryProvider).signOut();
+                ref.read(accountScreenControllerProvider.notifier).signOut();
                 if (context.mounted) return;
                 Navigator.of(context).pop();
               }
