@@ -13,7 +13,7 @@ class AccountScreenContoller extends StateNotifier<AsyncValue<void>> {
   /// application.
   final FakeAuthenticationRepository authRepository;
 
-  Future<void> signOut() async {
+  Future<bool> signOut() async {
     try {
       /// This line is setting the state of the `AccountScreenController` to a loading state.
       state = const AsyncValue.loading();
@@ -26,8 +26,10 @@ class AccountScreenContoller extends StateNotifier<AsyncValue<void>> {
       /// `AccountScreenController` has completed successfully and there is no data to be returned or
       /// stored.
       state = const AsyncValue.data(null);
+      return true;
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
+      return false;
     }
   }
 }

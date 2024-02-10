@@ -79,8 +79,8 @@ class FakeAuthenticationRepository implements AuthenticationRepository {
   /// The signOut function sets the value of _authState to null.
   @override
   Future<void> signOut() async {
-    await Future.delayed(const Duration(seconds: 5));
-    throw Exception('Connection Failed');
+    // await Future.delayed(const Duration(seconds: 5));
+    // throw Exception('Connection Failed');
     _authState.value = null;
   }
 

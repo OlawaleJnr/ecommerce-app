@@ -25,7 +25,7 @@ class AccountScreen extends ConsumerWidget {
 
     final state = ref.watch(accountScreenControllerProvider);
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBar( 
         title: state.isLoading ? const CircularProgressIndicator() : Text('Account'.hardcoded),
         actions: [
           ActionTextButton(
@@ -39,9 +39,10 @@ class AccountScreen extends ConsumerWidget {
                 defaultActionText: 'Logout'.hardcoded,
               );
               if (logout == true) {
-                ref.read(accountScreenControllerProvider.notifier).signOut();
-                if (context.mounted) return;
-                Navigator.of(context).pop();
+                final isSignOutSuccessful = await ref.read(accountScreenControllerProvider.notifier).signOut();
+                if (context.mounted && isSignOutSuccessful) {
+                  Navigator.of(context).pop(); 
+                }
               }
             },
           ),
